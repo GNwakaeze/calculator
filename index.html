@@ -35,8 +35,6 @@
             background-color: rgb(163, 201, 235);
             box-sizing: border-box;
             border: 20px solid rgb(36, 36, 126);
-
-            
         }
 
         .upperDisplay {
@@ -86,7 +84,7 @@
             height: 100%;
             width: 62px;
             display: grid;
-            grid-template-rows: repeat(5, 1fr); 
+            grid-template-rows: repeat(5, 1fr);
         }
 
         button {
@@ -131,8 +129,8 @@
     </div>
 
 <script>
-    //How to get the screen to display what im typing instead of blank
-    //add=itonal code such as controling the length of the upper screen 
+    ////How to get the screen to display what im typing instead of blank
+    //additonal code such as controling the length of the upper screen 
     //not allowing more than one operator at a tome (if +||/||*||- == true, then replace last button with current btn)
 
     const uDisplay = document.querySelector('.upperDisplay');
@@ -144,174 +142,148 @@
     const timesbtn= document.querySelector('.times');
     const dividebtn = document.querySelector('.divide');
     const cbtn = document.querySelector('.clear-btn');
-
     let num1;
     let num2;
     let sum;
-//try to split these into a for each for numbers ot populate the screen and one for operators to assign values to variables
-    btn.forEach((btn) => {
+
+// This section is the background code for operate(). It tells us which operator has been clicked.
+//1/2 first, it sets all the operators to false
+    let pClicked = false;
+    let mClicked = false;
+    let tClicked = false;
+    let dClicked = false;
+//2/2 then this function changes the operator to true. its envoked by event listeners, after values have been assigned to num1/2
+    function plusClicked() {return pClicked = true};
+    function minusClicked() {return mClicked = true};
+    function timesClicked() {return tClicked = true};
+    function divideClicked() {return dClicked = true};
+
+    function operate (a, b) { //operate tells the calculator what to do with the two numbers
+        if (pClicked == true) {return a + b ;
+        } else if (mClicked == true) {return a - b;
+        } else if (tClicked == true) {return a * b;
+        } else if (dClicked == true) {return a / b;
+        }
+    }
+
+    function clickActioned() {// This returns the operators to 'not clicked' so that i can operate again 
+        pClicked = false;
+        mClicked = false;
+        tClicked = false;
+        dClicked = false;
+    }
+
+    function sumToNum1() {// if there are already two numbers, this will consolidate them into Num1, and ensure no ther operators are clicked 
+        sum = operate(Number(num1), Number(num2));
+        num1 = sum;
+        num2 = '';
+        uDisplay.textContent = sum + ' ';
+        clickActioned();
+    }
+
+    btn.forEach((btn) => { //This allows the selected buttons to show in the display
         btn.addEventListener('click', (button) => {
                 uDisplay.textContent += btn.textContent;
                 lDisplay.textContent += btn.textContent;
         });
     });
     
-    cbtn.addEventListener('click', () => {
-        uDisplay.textContent = ''; //  there are probbaly a few other things to remove like resettig sum to 0 etc
+    cbtn.addEventListener('click', () => { //This clears the display and resets the values to nothing
+        uDisplay.textContent = ''; 
         lDisplay.textContent = '';
+        num1 = null;
+        num2 = null;
     });
 
-// this section is the background code for operate(). It tells us which operator has been clicked.
-// first, it sets all the operators to false
-    let pClicked = false;
-    let mClicked = false;
-    let tClicked = false;
-    let dClicked = false;
-// then this function changes the operator to true
-    function isPlusClicked() {return pClicked = true};
-    function isMinusClicked() {return mClicked = true};
-    function isTimesClicked() {return tClicked = true};
-    function isDivideClicked() {return dClicked = true};
-// these event listeners envoke the above funtion, once the operator is clicked
-    plusbtn.addEventListener('click', isPlusClicked);
-    minusbtn.addEventListener('click', isMinusClicked);
-    timesbtn.addEventListener('click', isTimesClicked);
-    dividebtn.addEventListener('click', isDivideClicked);
-
-    function operate (a, b) { //operate tells the calculator what to do with the two numbers
-        if (pClicked == true) {return a + b}
-        else if (mClicked == true) {return a - b}
-        else if (tClicked == true) {return a * b}
-        else if (dClicked == true) {return a / b};
-    }
-
- // I need to return the operators to 'not clicked' so that i can operate again. so I will call on the below finction 
-
- //if ((pClicked == true) || (mClicked == true) || (tClicked == true) || (dClicked == true))
-
-    function clickActioned() {
-        pClicked = false;
-        mClicked = false;
-        tClicked = false;
-        dClicked = false;
-    }
-
-// I think the sum up will be the same for each function, so maybe i can call it rather rthan c+p it 
-    function sumToNum1() {
-        sum = operate(Number(num1), Number(num2));
-        console.log(sum);
-        num1 = sum;
-        num2 = '';
-    }
-
-    plusbtn.addEventListener('click', () => {
-        mClicked = false;
-        tClicked = false;
-        dClicked = false;
-        if (num1 != null) {
-            num2 = lDisplay.textContent.replace('+','');
-            sumToNum1();
+    plusbtn.addEventListener('click', () => { //Plus button removes the symbol and assigns the number a variable
+        if (num1 == null) {
+            num1 = lDisplay.textContent.replace('+','');
+            plusClicked();
             lDisplay.textContent = '';
         } else {
-            num1 = lDisplay.textContent.replace('+','');
-            console.log(num1);
-            lDisplay.textContent = '';
-        }
+            if (lDisplay.textContent != null) {
+                num2 = lDisplay.textContent.replace('+','');
+                sumToNum1();
+                plusClicked();
+                lDisplay.textContent = '';
+            }
+        } 
+            
     });
 
     minusbtn.addEventListener('click', () => {
-        pClicked = false;
-        tClicked = false;
-        dClicked = false;
-        if (num1 != null) {
-            num2 = lDisplay.textContent.replace('-','');
-            sumToNum1();
+        if (num1 == null) {
+            num1 = lDisplay.textContent.replace('-','');
+            minusClicked();
             lDisplay.textContent = '';
         } else {
-            num1 = lDisplay.textContent.replace('-','');
-            console.log(num1);
+            if (lDisplay.textContent != null) {
+                num2 = lDisplay.textContent.replace('-','');
+                sumToNum1();
+                minusClicked();
+                lDisplay.textContent = '';
+            }
+        } 
+            
+    });
+
+    timesbtn.addEventListener('click', () => {
+        if (num1 == null) {
+            num1 = lDisplay.textContent.replace('*','');
+            timesClicked();
             lDisplay.textContent = '';
-        }
+        } else {
+            if (lDisplay.textContent != null) {
+                num2 = lDisplay.textContent.replace('*','');
+                sumToNum1();
+                timesClicked();
+                lDisplay.textContent = '';
+            }
+        } 
+            
+    });
+
+
+    dividebtn.addEventListener('click', () => {
+        if (num1 == null) {
+            num1 = lDisplay.textContent.replace('/','');
+            divideClicked();
+            lDisplay.textContent = '';
+        } else if ((lDisplay.textContent != null) && (lDisplay.textContent == '0/')) {
+            uDisplay.textContent = null;
+            lDisplay.textContent = 'LOL Nice Try';
+        } else {
+            num2 = lDisplay.textContent.replace('/','');
+            sumToNum1();
+            divideClicked();
+            lDisplay.textContent = '';
+        } 
+            
     });
 
     equalsbtn.addEventListener('click', () => {
         if (num1 == null) {
             lDisplay.textContent = '';
             uDisplay.textContent = '';
-        } else if (num1 != null) {
-            num2 = lDisplay.textContent.replace('=','')
-            sum = operate(Number(num1), Number(num2));
-            console.log(sum);
-            lDisplay.textContent = sum
-            uDisplay.textContent = '';
-            num1 = '';
-            num2 = '';
+        } else if ((dClicked == true) && (lDisplay.textContent == '0=')) {
+            uDisplay.textContent = null;
+            lDisplay.textContent = 'LOL Nice Try';
+        } else {
+            if (lDisplay.textContent != null) {
+                num2 = lDisplay.textContent.replace('=','');
+                sum = operate(Number(num1), Number(num2));
+                lDisplay.textContent = roundAccurately(sum, 5).toString();
+                uDisplay.textContent = '';
+                num1 = null;
+                num2 = null;
+            }
         }
         clickActioned()
     });
 
-/*
-   
-
-
-    timesbtn.addEventListener('click', () => {
-    if (num1 != null) {
-        num2 = lDisplay.textContent.replace('+','');
-        sum = operate(Number(num1), Number(num2));
-        console.log(sum);
-        num1 = sum;
-        num2 = '';
-        lDisplay.textContent = '';
-    } else {
-        num1 = lDisplay.textContent.replace('+','');
-        console.log(num1);
-        lDisplay.textContent = '';
-    }
-    });
-
-
-    dividebtn.addEventListener('click', () => {
-    if (num1 != null) {
-        num2 = lDisplay.textContent.replace('+','');
-        sum = operate(Number(num1), Number(num2));
-        console.log(sum);
-        num1 = sum;
-        num2 = '';
-        lDisplay.textContent = '';
-    } else {
-        num1 = lDisplay.textContent.replace('+','');
-        console.log(num1);
-        lDisplay.textContent = '';
-    }
-    });
-*/
-    
-/* 
-    let operator; //why isnt this working?? its NaN
-
-    function add(a, b, ...args) {
-        return a + b;
-    };   
-   
-    function subtract(a, b) {
-        return a - b;
-    }
-
-    function multiply(a, b) {
-        return a * b;
-    }
-
-    function divide(a, b) { 
-        return a/b;
-    }
-
-    function operate(a, b) {
-        return operator(a, b);
-    }
-    sum = add(Number(num1), Number(num2));
-    operate(`${num1}, ${num2}`)
-*/
-
+    function roundAccurately(num, places) {//I dont know what this does or how it does it i had to steal it, or use toFixed which gave too many 0
+    return parseFloat(Math.round(num + 'e' + places) + 'e-' + places);
+}
 </script>
 </body>
 </html>
