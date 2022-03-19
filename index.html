@@ -36,6 +36,18 @@
             box-sizing: border-box;
             border: 20px solid rgb(36, 36, 126);
 
+            
+        }
+
+        .upperDisplay {
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            font-size: medium;
+            margin-bottom: 15px;
+        }
+
+        .lowerDisplay {
             display: flex;
             align-items: flex-end;
             justify-content: flex-end;
@@ -87,7 +99,10 @@
 </head>
 <body>
     <div class="calculator">
-        <div class="screen"></div>
+        <div class="screen">
+            <div class="upperDisplay"></div>
+            <div class="lowerDisplay"></div>
+        </div>
         <div class="buttons container">
             <div class="buttons main">
                 <div class="clear"><button class="clear-btn">C</button></div> 
@@ -116,34 +131,168 @@
     </div>
 
 <script>
-    const screen = document.querySelector('.screen');
+    //How to get the screen to display what im typing instead of blank
+    //add=itonal code such as controling the length of the upper screen 
+    //not allowing more than one operator at a tome (if +||/||*||- == true, then replace last button with current btn)
+
+    const uDisplay = document.querySelector('.upperDisplay');
+    const lDisplay = document.querySelector('.lowerDisplay');
     const btn = document.querySelectorAll('button');
     const equalsbtn = document.querySelector('.equals');
     const plusbtn = document.querySelector('.plus');
     const minusbtn = document.querySelector('.minus');
-    const timebtn= document.querySelector('.times');
-    const dividetbn = document.querySelector('.divide');
+    const timesbtn= document.querySelector('.times');
+    const dividebtn = document.querySelector('.divide');
     const cbtn = document.querySelector('.clear-btn');
 
+    let num1;
+    let num2;
+    let sum;
+//try to split these into a for each for numbers ot populate the screen and one for operators to assign values to variables
     btn.forEach((btn) => {
         btn.addEventListener('click', (button) => {
-            screen.textContent += btn.textContent;
-           // return screenOutput;
+                uDisplay.textContent += btn.textContent;
+                lDisplay.textContent += btn.textContent;
         });
     });
     
     cbtn.addEventListener('click', () => {
-        screen.textContent = ''; //  there are probbaly a few other things to remove like resettig sum to 0 etc
+        uDisplay.textContent = ''; //  there are probbaly a few other things to remove like resettig sum to 0 etc
+        lDisplay.textContent = '';
     });
 
-    plusbtn.addEventListener('click', () => {
+// this section is the background code for operate(). It tells us which operator has been clicked.
+// first, it sets all the operators to false
+    let pClicked = false;
+    let mClicked = false;
+    let tClicked = false;
+    let dClicked = false;
+// then this function changes the operator to true
+    function isPlusClicked() {return pClicked = true};
+    function isMinusClicked() {return mClicked = true};
+    function isTimesClicked() {return tClicked = true};
+    function isDivideClicked() {return dClicked = true};
+// these event listeners envoke the above funtion, once the operator is clicked
+    plusbtn.addEventListener('click', isPlusClicked);
+    minusbtn.addEventListener('click', isMinusClicked);
+    timesbtn.addEventListener('click', isTimesClicked);
+    dividebtn.addEventListener('click', isDivideClicked);
 
-    })
-
-    function add(a, b) {
-        return a + b;
+    function operate (a, b) { //operate tells the calculator what to do with the two numbers
+        if (pClicked == true) {return a + b}
+        else if (mClicked == true) {return a - b}
+        else if (tClicked == true) {return a * b}
+        else if (dClicked == true) {return a / b};
     }
 
+ // I need to return the operators to 'not clicked' so that i can operate again. so I will call on the below finction 
+
+ //if ((pClicked == true) || (mClicked == true) || (tClicked == true) || (dClicked == true))
+
+    function clickActioned() {
+        pClicked = false;
+        mClicked = false;
+        tClicked = false;
+        dClicked = false;
+    }
+
+// I think the sum up will be the same for each function, so maybe i can call it rather rthan c+p it 
+    function sumToNum1() {
+        sum = operate(Number(num1), Number(num2));
+        console.log(sum);
+        num1 = sum;
+        num2 = '';
+    }
+
+    plusbtn.addEventListener('click', () => {
+        mClicked = false;
+        tClicked = false;
+        dClicked = false;
+        if (num1 != null) {
+            num2 = lDisplay.textContent.replace('+','');
+            sumToNum1();
+            lDisplay.textContent = '';
+        } else {
+            num1 = lDisplay.textContent.replace('+','');
+            console.log(num1);
+            lDisplay.textContent = '';
+        }
+    });
+
+    minusbtn.addEventListener('click', () => {
+        pClicked = false;
+        tClicked = false;
+        dClicked = false;
+        if (num1 != null) {
+            num2 = lDisplay.textContent.replace('-','');
+            sumToNum1();
+            lDisplay.textContent = '';
+        } else {
+            num1 = lDisplay.textContent.replace('-','');
+            console.log(num1);
+            lDisplay.textContent = '';
+        }
+    });
+
+    equalsbtn.addEventListener('click', () => {
+        if (num1 == null) {
+            lDisplay.textContent = '';
+            uDisplay.textContent = '';
+        } else if (num1 != null) {
+            num2 = lDisplay.textContent.replace('=','')
+            sum = operate(Number(num1), Number(num2));
+            console.log(sum);
+            lDisplay.textContent = sum
+            uDisplay.textContent = '';
+            num1 = '';
+            num2 = '';
+        }
+        clickActioned()
+    });
+
+/*
+   
+
+
+    timesbtn.addEventListener('click', () => {
+    if (num1 != null) {
+        num2 = lDisplay.textContent.replace('+','');
+        sum = operate(Number(num1), Number(num2));
+        console.log(sum);
+        num1 = sum;
+        num2 = '';
+        lDisplay.textContent = '';
+    } else {
+        num1 = lDisplay.textContent.replace('+','');
+        console.log(num1);
+        lDisplay.textContent = '';
+    }
+    });
+
+
+    dividebtn.addEventListener('click', () => {
+    if (num1 != null) {
+        num2 = lDisplay.textContent.replace('+','');
+        sum = operate(Number(num1), Number(num2));
+        console.log(sum);
+        num1 = sum;
+        num2 = '';
+        lDisplay.textContent = '';
+    } else {
+        num1 = lDisplay.textContent.replace('+','');
+        console.log(num1);
+        lDisplay.textContent = '';
+    }
+    });
+*/
+    
+/* 
+    let operator; //why isnt this working?? its NaN
+
+    function add(a, b, ...args) {
+        return a + b;
+    };   
+   
     function subtract(a, b) {
         return a - b;
     }
@@ -156,12 +305,12 @@
         return a/b;
     }
 
-    function operate() { //Ive chose num1/2 instead of a/b to ensure i dont get the parameters confused
-        return subtract(num1, num2);
+    function operate(a, b) {
+        return operator(a, b);
     }
-
-   
-
+    sum = add(Number(num1), Number(num2));
+    operate(`${num1}, ${num2}`)
+*/
 
 </script>
 </body>
