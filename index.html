@@ -90,6 +90,10 @@
         button {
             height: 100%;
             width: 100%;
+            background-color: rgb(133, 226, 89);
+        }
+
+        .numbers button {
             background-color: rgb(147, 147, 240);
         }
 
@@ -115,7 +119,7 @@
                     <div class="number"><button>2</button></div>
                     <div class="number"><button>3</button></div>
                     <div class="number"><button>0</button></div>
-                    <div class="number"><button>.</button></div>
+                    <div class="number decimal"><button>.</button></div>
                 </div> 
             </div>
             <div class="buttons side">
@@ -272,7 +276,7 @@
             if (lDisplay.textContent != null) {
                 num2 = lDisplay.textContent.replace('=','');
                 sum = operate(Number(num1), Number(num2));
-                lDisplay.textContent = roundAccurately(sum, 5).toString();
+                roundUp();
                 uDisplay.textContent = '';
                 num1 = null;
                 num2 = null;
@@ -281,9 +285,22 @@
         clickActioned()
     });
 
-    function roundAccurately(num, places) {//I dont know what this does or how it does it i had to steal it, or use toFixed which gave too many 0
-    return parseFloat(Math.round(num + 'e' + places) + 'e-' + places);
-}
+    function roundUp() { //This stops sums with long decimals from flowing off screen (it doesnt round accurately though)
+        let toArray = sum.toString().split("");
+        if (toArray.includes(".") == true) {
+            x = toArray.indexOf(".")+7;
+            roundedSum = toArray.join("").slice(0, x);
+            lDisplay.textContent = roundedSum;
+        } else {
+            lDisplay.textContent = sum;
+        }
+    }
+
+    /* This rounds the sum up, but is not original code
+    roundAccurately(sum, 5).toString();
+    function roundAccurately(num, places) {
+    return parseFloat(Math.round(num + 'e' + places) + 'e-' + places); 
+} */
 </script>
 </body>
 </html>
